@@ -8,7 +8,7 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: #0a0a0c; color: #e8e8e8; line-height: 1.5; }
-        :root { --red-primary: #c41e3a; --red-glow: rgba(196, 30, 58, 0.4); --bg-card: #141416; --border: #2a2a2e; }
+        :root { --red-primary: #c41e3a; --red-glow: rgba(196, 30, 58, 0.4); --bg-card: #141416; --border: #2a2a2e; --gold: #d4af37; }
         
         .hero { background: linear-gradient(135deg, #0a0a0c 0%, #1a0a0c 100%); border-bottom: 2px solid var(--red-primary); padding: 2rem 1rem 1.5rem; position: relative; overflow: hidden; }
         .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 20% 30%, rgba(196,30,58,0.15) 0%, transparent 70%); pointer-events: none; }
@@ -16,16 +16,14 @@
         .logo-area { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
         .baphomet-seal { width: 70px; height: 70px; filter: drop-shadow(0 0 8px var(--red-glow)); }
         
-        /* Логотип в оригинальном размере */
-        .site-logo {
-            width: auto;
-            height: auto;
-            max-width: 100%;
-            display: block;
-        }
-        
+        .site-logo { width: auto; height: auto; max-width: 100%; display: block; }
         .title-group { display: flex; flex-direction: column; }
         .title-group p { color: #a0a0a8; letter-spacing: 1px; font-size: 0.9rem; margin-top: 0.25rem; }
+        
+        .nav-tabs { display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap; justify-content: center; }
+        .tab-btn { background: #1e1e24; border: 1px solid #333; color: #aaa; padding: 0.6rem 1.5rem; border-radius: 40px; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: all 0.2s; }
+        .tab-btn:hover { background: #2a2a2e; color: white; border-color: var(--red-primary); }
+        .tab-btn.active { background: var(--red-primary); color: white; border-color: var(--red-primary); box-shadow: 0 0 10px var(--red-glow); }
         
         .lang-switch { display: flex; gap: 0.5rem; background: rgba(0,0,0,0.5); padding: 0.3rem; border-radius: 40px; backdrop-filter: blur(4px); border: 1px solid #333; }
         .lang-btn { background: transparent; border: none; color: #888; padding: 0.4rem 1rem; border-radius: 30px; cursor: pointer; font-weight: 600; font-size: 0.8rem; transition: all 0.2s; }
@@ -76,15 +74,28 @@
         .no-data { text-align: center; color: #888; padding: 2rem; }
         .results-count { margin-bottom: 1.5rem; font-size: 0.9rem; color: #aaa; }
         
+        .mechanics-content { max-width: 900px; margin: 0 auto; }
+        .mechanics-card { background: var(--bg-card); border-radius: 20px; border: 1px solid var(--border); padding: 1.5rem; margin-bottom: 1.5rem; }
+        .mechanics-card h3 { color: var(--red-primary); margin-bottom: 1rem; font-size: 1.3rem; border-left: 3px solid var(--red-primary); padding-left: 0.75rem; }
+        .mechanics-card h4 { color: var(--gold); margin: 1rem 0 0.5rem 0; font-size: 1.1rem; }
+        .mechanics-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+        .mechanics-table th, .mechanics-table td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #2a2a2e; }
+        .mechanics-table th { color: var(--red-primary); font-weight: 600; }
+        .formula { background: #0a0a0c; padding: 1rem; border-radius: 12px; font-family: monospace; font-size: 1rem; color: var(--gold); text-align: center; margin: 1rem 0; border: 1px solid #333; }
+        .example-box { background: #0e0e10; border-left: 3px solid var(--red-primary); padding: 1rem; margin: 1rem 0; border-radius: 8px; }
+        
         .footer { text-align: center; padding: 2rem; border-top: 1px solid #1e1e24; color: #777; font-size: 0.8rem; }
         .footer a { color: var(--red-primary); text-decoration: none; }
         .footer a:hover { text-decoration: underline; }
         .credits { margin-top: 0.5rem; font-size: 0.7rem; color: #555; }
         
+        .hidden { display: none; }
+        
         @media (max-width: 680px) { 
             .hero-content { flex-direction: column; text-align: center; } 
             .logo-area { justify-content: center; } 
             .site-logo { max-width: 90%; margin: 0 auto; }
+            .nav-tabs { margin-top: 1rem; }
         }
     </style>
 </head>
@@ -116,16 +127,25 @@
         <div class="search-section">
             <input type="text" class="search-box" id="searchInput" placeholder="Search ghost...">
         </div>
+        <div class="nav-tabs">
+            <button class="tab-btn active" data-tab="ghosts">👻 Призраки</button>
+            <button class="tab-btn" data-tab="mechanics">⚙️ Механики</button>
+        </div>
     </div>
     <div class="container">
-        <div class="results-count" id="resultsCount">Ghosts in database: <span id="totalCount">0</span></div>
-        <div class="ghost-grid" id="ghostGrid"></div>
+        <div id="ghostsTab">
+            <div class="results-count" id="resultsCount">Призраков в базе: <span id="totalCount">0</span></div>
+            <div class="ghost-grid" id="ghostGrid"></div>
+        </div>
+        <div id="mechanicsTab" class="hidden">
+            <div class="mechanics-content" id="mechanicsContent"></div>
+        </div>
     </div>
     <div class="footer">
-        <div id="footerText">Information based on in-game data | Danger levels: 1 — low, 5 — maximum</div>
+        <div id="footerText">Информация основана на внутриигровых данных | Уровни опасности: 1 — низкий, 5 — максимальный</div>
         <div class="credits">
-            📊 Guide created based on information from tester <strong>Rizonchik</strong>. All data on percentages and cooldowns taken from <a href="https://wiki.ghost-exile.site" target="_blank">wiki.ghost-exile.site</a><br>
-            🎥 Players can visually see some ghosts in the video by <strong>DmiOriginal</strong>: <a href="https://youtu.be/S_ifISHYkXM?si=SI2e1Rz7yGCJPRNU" target="_blank">watch on YouTube</a>
+            📊 Гайд создан на основе информации от тестера <strong>Rizonchik</strong>. Все данные о процентах и кулдаунах взяты с <a href="https://wiki.ghost-exile.site" target="_blank">wiki.ghost-exile.site</a><br>
+            🎥 Игроки могут наглядно увидеть некоторых призраков в видео от <strong>DmiOriginal</strong>: <a href="https://youtu.be/S_ifISHYkXM?si=SI2e1Rz7yGCJPRNU" target="_blank">смотреть на YouTube</a>
         </div>
     </div>
     <div id="modal" class="modal"><div class="modal-content"><div class="modal-header"><h2 id="modalTitle"></h2><button class="modal-close" id="closeModal">&times;</button></div><div class="modal-body" id="modalBody"></div></div></div>
@@ -147,7 +167,28 @@
                 willBeAdded: "будет добавлена позже.",
                 timerStart: "Старт",
                 timerPause: "Пауза",
-                timerReset: "Сброс"
+                timerReset: "Сброс",
+                mechanicsTitle: "Игровые механики",
+                huntIntervals: "⏱️ Интервалы между охотами",
+                huntIntervalsDesc: "После окончания охоты запускается таймер. Когда таймер срабатывает — система проверяет, начнётся ли охота.",
+                difficulty: "Сложность",
+                interval: "Интервал (сек)",
+                beginner: "Начинающий",
+                experienced: "Опытный",
+                madman: "Безумец",
+                psychopath: "Псих",
+                calcTitle: "📊 Система расчёта шанса атаки",
+                calcDesc: "Система собирает <strong>средний рассудок живых игроков в доме</strong>. У каждого призрака есть два ключевых показателя:",
+                SRA_desc: "<strong style='color:#c41e3a'>СРА</strong> — Средний рассудок для атаки (по умолчанию 50). Если средний рассудок выше СРА — атаки не будет (без учёта особых условий).",
+                MSA_desc: "<strong style='color:#c41e3a'>МША</strong> — Модификатор шанса атаки (участвует в формуле вычисления атаки).",
+                formula: "Формула: (100 - Средний рассудок игроков) + МША + Спец. условие + (0, 5, 10, 12)",
+                formulaNote: "Чем больше итоговое значение — тем выше шанс на атаку. Это создаёт <strong>прогрессивный шанс</strong>: чем меньше рассудка, тем выше вероятность охоты.",
+                exampleTitle: "📸 Пример: Кидзё (1 уровень)",
+                examplePhotoYes: "<strong>Если сфотографирован:</strong><br>• СРА = +10 (атака возможна при среднем рассудке ≤60)<br>• МША = +20<br>• Доп. триггер: 55% шанс мгновенной охоты",
+                examplePhotoNo: "<strong>Если НЕ сфотографирован:</strong><br>• СРА = -10 (атака возможна только при среднем рассудке ≤40)<br>• МША = -15",
+                exampleHow: "<strong>Как это работает:</strong> После фотографии Кидзё становится опаснее — он может атаковать при более высоком рассудке (60 вместо 40), а шанс атаки значительно возрастает. Плюс есть прямой шанс 55% начать охоту сразу после фото.",
+                specialTitle: "⚡ Дополнительные условия",
+                specialList: "<li>Сжигание проклятия у любимой вещи (игнорирует стандартный порог рассудка)</li><li>Особые способности призраков (например, реакция на распятие, паспорт и т.д.)</li><li>Случайный бонус +0, +5, +10 или +12 к формуле</li>"
             },
             en: {
                 siteSubtitle: "GHOST GUIDE • KNOWLEDGE BASE",
@@ -161,14 +202,36 @@
                 willBeAdded: "will be added later.",
                 timerStart: "Start",
                 timerPause: "Pause",
-                timerReset: "Reset"
+                timerReset: "Reset",
+                mechanicsTitle: "Game Mechanics",
+                huntIntervals: "⏱️ Hunt Intervals",
+                huntIntervalsDesc: "After a hunt ends, a timer starts. When the timer triggers, the system checks if a new hunt will begin.",
+                difficulty: "Difficulty",
+                interval: "Interval (sec)",
+                beginner: "Beginner",
+                experienced: "Experienced",
+                madman: "Madman",
+                psychopath: "Psychopath",
+                calcTitle: "📊 Hunt Chance Calculation System",
+                calcDesc: "The system collects the <strong>average sanity of living players inside the house</strong>. Each ghost has two key parameters:",
+                SRA_desc: "<strong style='color:#c41e3a'>SRA</strong> — Sanity Required for Attack (default 50). If average sanity is above SRA, no attack will occur (excluding special conditions).",
+                MSA_desc: "<strong style='color:#c41e3a'>MSA</strong> — Attack Chance Modifier (participates in the attack calculation formula).",
+                formula: "Formula: (100 - Average Sanity) + MSA + Special Condition + (0, 5, 10, 12)",
+                formulaNote: "The higher the resulting value, the higher the chance of an attack. This creates a <strong>progressive chance</strong>: the lower the sanity, the higher the hunt probability.",
+                exampleTitle: "📸 Example: Kidzё (Level 1)",
+                examplePhotoYes: "<strong>If photographed:</strong><br>• SRA = +10 (attack possible at average sanity ≤60)<br>• MSA = +20<br>• Additional trigger: 55% chance of instant hunt",
+                examplePhotoNo: "<strong>If NOT photographed:</strong><br>• SRA = -10 (attack only possible at average sanity ≤40)<br>• MSA = -15",
+                exampleHow: "<strong>How it works:</strong> After being photographed, Kidzё becomes more dangerous — it can attack at higher sanity (60 instead of 40), and the attack chance significantly increases. Plus there's a direct 55% chance to start a hunt immediately after the photo.",
+                specialTitle: "⚡ Special Conditions",
+                specialList: "<li>Burning a cursed possession (ignores standard sanity threshold)</li><li>Special ghost abilities (e.g., reaction to crucifix, passport, etc.)</li><li>Random bonus +0, +5, +10 or +12 to the formula</li>"
             }
         };
 
         let currentLang = 'ru';
+        let currentTab = 'ghosts';
 
         // ============================================================
-        // GHOST DATABASE
+        // ПОЛНАЯ БАЗА ДАННЫХ ПРИЗРАКОВ (ВСЕ 26 С АБИЛКАМИ)
         // ============================================================
         
         const ghostData = {
@@ -206,7 +269,7 @@
             
             "Кидзё": { ru_name: "Кидзё", en_name: "Kidzё", evidence_ru: ["Радиоприемник", "Уровень ЭМП 5", "Дымка"], evidence_en: ["Radio", "EMF Level 5", "Mist"],
               abilities_ru: `<div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Если сфотографировать — может мгновенно начать охоту (55% шанс). +20% к шансу охоты после фото.</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Взгляд на призрака вызывает ухудшение чувств (90% шанс). Эффект оглушения 8-23 секунды.</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Фотография может прервать охоту (63% шанс). Если сфотографировать во время активной погони — атака прекращается.</div></div>`,
-              abilities_en: `<div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> If photographed — may instantly start hunt (55% chance). +20% hunt chance after photo.</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text"><strong>Unique trait:</strong> Looking at ghost causes sensory degradation (90% chance). Stun effect 8-23 seconds.</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text"><strong>Unique trait:</strong> Photograph may interrupt hunt (63% chance). If photographed during active chase — attack stops.</div></div>` },
+              abilities_en: `<div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> If photographed — may instantly start hunt (55% chance). +20% hunt chance after photo.</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text"><strong>Unique trait:</strong> Looking at ghost causes sensory degradation (90% chance). Stun effect 8-23 seconds.</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text><strong>Unique trait:</strong> Photograph may interrupt hunt (63% chance). If photographed during active chase — attack stops.</div></div>` },
             
             "Мара": { ru_name: "Мара", en_name: "Mara", evidence_ru: ["Голос в диктофоне", "Инфракрасный датчик движения", "Следы эктоплазмы"], evidence_en: ["Spirit Box", "IR Motion Sensor", "Ectoplasm"],
               abilities_ru: `<div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Часто выключает электрощиток (38% шанс через 30 сек). На свету атакует реже (-10% к шансу), в темноте чаще (+10%).</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Может вывести фонарик из строя (15% шанс) на 15-35 секунд. Кулдаун 48 сек.</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Накладывает непроглядный туман во время охоты. Может выключать прожектор.</div></div>`,
@@ -254,7 +317,7 @@
             
             "Ревенант": { ru_name: "Ревенант", en_name: "Revenant", evidence_ru: ["Голос в диктофоне", "Следы эктоплазмы", "Огонек на камере"], evidence_en: ["Spirit Box", "Ectoplasm", "Camera Light"],
               abilities_ru: `<div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Если рядом распятие — частота охоты увеличена (+30 к порогу, +40% к шансу). Базовая скорость 1.55x.</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Если срабатывает распятие — через 5 сек запускает повторную охоту с ускорением (+9.3%).</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Если нет целых распятий — скорость становится в 2 раза выше до конца охоты.</div></div>`,
-              abilities_en: `<div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> If crucifix nearby — increased hunt frequency (+30 threshold, +40% chance). Base speed 1.55x.</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text"><strong>Unique trait:</strong> If crucifix triggers — after 5 sec starts repeat hunt with acceleration (+9.3%).</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text"><strong>Unique trait:</strong> If no intact crucifixes — speed becomes 2x higher until hunt ends.</div></div>` },
+              abilities_en: `<div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> If crucifix nearby — increased hunt frequency (+30 threshold, +40% chance). Base speed 1.55x.</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text><strong>Unique trait:</strong> If crucifix triggers — after 5 sec starts repeat hunt with acceleration (+9.3%).</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text"><strong>Unique trait:</strong> If no intact crucifixes — speed becomes 2x higher until hunt ends.</div></div>` },
             
             "Ронове": { ru_name: "Ронове", en_name: "Ronove", evidence_ru: ["Радиоприемник", "Голос в диктофоне", "Следы эктоплазмы"], evidence_en: ["Radio", "Spirit Box", "Ectoplasm"],
               abilities_ru: `<div class="ability-section"><div class="ability-title">Пассивная способность</div><div class="ability-text"><strong>Подавление техники (15% шанс):</strong> В момент появления или начала охоты выключает все электронные приборы в доме.</div></div><div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Может создать 2 призрачных огонька в соседних комнатах (5-25% шанс) на 20-110 сек.</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Может менять записи об уликах в дневнике (9% шанс каждые 35 сек).</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Особая охота с призывом душ (19% шанс). Нужно прогонять души голосовыми командами.</div></div>`,
@@ -295,11 +358,7 @@
         document.getElementById("timerReset").onclick = () => { if (timerInterval) { clearInterval(timerInterval); timerInterval = null; } timerSeconds = 0; updateTimerDisplay(); };
 
         function getDangerLevels() {
-            return `
-                <div class="level level-1">1</div>
-                <div class="level level-3">3</div>
-                <div class="level level-5">5</div>
-            `;
+            return `<div class="level level-1">1</div><div class="level level-3">3</div><div class="level level-5">5</div>`;
         }
 
         function renderGhosts() {
@@ -347,6 +406,48 @@
             document.getElementById("modal").classList.add("active");
         };
 
+        function renderMechanics() {
+            const t = translations[currentLang];
+            const mechanicsHtml = `
+                <div class="mechanics-card">
+                    <h3>${t.huntIntervals}</h3>
+                    <p>${t.huntIntervalsDesc}</p>
+                    <table class="mechanics-table">
+                        <thead><tr><th>${t.difficulty}</th><th>${t.interval}</th></tr></thead>
+                        <tbody>
+                            <tr><td>🟢 ${t.beginner}</td><td>17-30</td></tr>
+                            <tr><td>🟡 ${t.experienced}</td><td>18-23</td></tr>
+                            <tr><td>🟠 ${t.madman}</td><td>19-24</td></tr>
+                            <tr><td>🔴 ${t.psychopath}</td><td>18-23</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mechanics-card">
+                    <h3>${t.calcTitle}</h3>
+                    <p>${t.calcDesc}</p>
+                    <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+                        <li>${t.SRA_desc}</li>
+                        <li>${t.MSA_desc}</li>
+                    </ul>
+                    <div class="formula">${t.formula}</div>
+                    <p>${t.formulaNote}</p>
+                </div>
+                <div class="mechanics-card">
+                    <h3>${t.exampleTitle}</h3>
+                    <div class="example-box">
+                        <p>${t.examplePhotoYes}</p>
+                        <p style="margin-top: 0.5rem;">${t.examplePhotoNo}</p>
+                    </div>
+                    <p>${t.exampleHow}</p>
+                </div>
+                <div class="mechanics-card">
+                    <h3>${t.specialTitle}</h3>
+                    <ul style="margin-left: 1.5rem;">${t.specialList}</ul>
+                </div>
+            `;
+            document.getElementById("mechanicsContent").innerHTML = mechanicsHtml;
+        }
+
         function updateUILanguage() {
             document.getElementById("siteSubtitle").innerText = translations[currentLang].siteSubtitle;
             document.getElementById("searchInput").placeholder = translations[currentLang].searchPlaceholder;
@@ -355,10 +456,58 @@
             document.getElementById("timerStart").innerText = translations[currentLang].timerStart;
             document.getElementById("timerPause").innerText = translations[currentLang].timerPause;
             document.getElementById("timerReset").innerText = translations[currentLang].timerReset;
-            renderGhosts();
+            
+            document.querySelectorAll(".tab-btn").forEach(btn => {
+                if (btn.getAttribute("data-tab") === "ghosts") {
+                    btn.innerHTML = currentLang === 'ru' ? "👻 Призраки" : "👻 Ghosts";
+                } else {
+                    btn.innerHTML = currentLang === 'ru' ? "⚙️ Механики" : "⚙️ Mechanics";
+                }
+            });
+            
+            if (currentTab === 'ghosts') {
+                renderGhosts();
+            } else {
+                renderMechanics();
+            }
         }
 
-        // Language switch
+        function switchTab(tabId) {
+            currentTab = tabId;
+            const ghostsTab = document.getElementById("ghostsTab");
+            const mechanicsTab = document.getElementById("mechanicsTab");
+            const searchInput = document.getElementById("searchInput");
+            const resultsCount = document.querySelector(".results-count");
+            
+            if (tabId === 'ghosts') {
+                ghostsTab.classList.remove("hidden");
+                mechanicsTab.classList.add("hidden");
+                searchInput.classList.remove("hidden");
+                if (resultsCount) resultsCount.classList.remove("hidden");
+                renderGhosts();
+            } else {
+                ghostsTab.classList.add("hidden");
+                mechanicsTab.classList.remove("hidden");
+                searchInput.classList.add("hidden");
+                if (resultsCount) resultsCount.classList.add("hidden");
+                renderMechanics();
+            }
+            
+            document.querySelectorAll(".tab-btn").forEach(btn => {
+                if (btn.getAttribute("data-tab") === tabId) {
+                    btn.classList.add("active");
+                } else {
+                    btn.classList.remove("active");
+                }
+            });
+        }
+
+        document.querySelectorAll(".tab-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                switchTab(btn.getAttribute("data-tab"));
+            });
+        });
+
         document.querySelectorAll(".lang-btn").forEach(btn => {
             btn.addEventListener("click", () => {
                 document.querySelectorAll(".lang-btn").forEach(b => b.classList.remove("active"));
@@ -373,6 +522,7 @@
         document.getElementById("searchInput").oninput = () => renderGhosts();
         
         renderGhosts();
+        renderMechanics();
     </script>
 </body>
 </html>
