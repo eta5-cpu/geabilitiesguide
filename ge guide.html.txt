@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Ghost Exile | Ghost Guide</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&family=Playfair+Display:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0a0a0c; color: #e8e8e8; line-height: 1.5; }
+        :root { --red-primary: #c41e3a; --red-glow: rgba(196, 30, 58, 0.4); --bg-card: #141416; --border: #2a2a2e; }
+        
+        .hero { background: linear-gradient(135deg, #0a0a0c 0%, #1a0a0c 100%); border-bottom: 2px solid var(--red-primary); padding: 2rem 1rem 1.5rem; position: relative; overflow: hidden; }
+        .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 20% 30%, rgba(196,30,58,0.15) 0%, transparent 70%); pointer-events: none; }
+        .hero-content { max-width: 1400px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem; position: relative; z-index: 2; }
+        .logo-area { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+        .baphomet-seal { width: 70px; height: 70px; filter: drop-shadow(0 0 8px var(--red-glow)); }
+        
+        /* Логотип в оригинальном размере */
+        .site-logo {
+            width: auto;
+            height: auto;
+            max-width: 100%;
+            display: block;
+        }
+        
+        .title-group { display: flex; flex-direction: column; }
+        .title-group p { color: #a0a0a8; letter-spacing: 1px; font-size: 0.9rem; margin-top: 0.25rem; }
+        
+        .lang-switch { display: flex; gap: 0.5rem; background: rgba(0,0,0,0.5); padding: 0.3rem; border-radius: 40px; backdrop-filter: blur(4px); border: 1px solid #333; }
+        .lang-btn { background: transparent; border: none; color: #888; padding: 0.4rem 1rem; border-radius: 30px; cursor: pointer; font-weight: 600; font-size: 0.8rem; transition: all 0.2s; }
+        .lang-btn.active { background: var(--red-primary); color: white; box-shadow: 0 0 8px var(--red-glow); }
+        .lang-btn:hover:not(.active) { color: white; background: #2a2a2e; }
+        
+        .timer-card { background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); border: 1px solid var(--red-primary); border-radius: 20px; padding: 0.75rem 1.5rem; text-align: center; min-width: 200px; }
+        .timer-display { font-family: monospace; font-size: 2rem; font-weight: 700; letter-spacing: 3px; color: var(--red-primary); text-shadow: 0 0 5px var(--red-glow); }
+        .timer-buttons { display: flex; gap: 0.5rem; margin-top: 0.5rem; justify-content: center; }
+        .timer-btn { background: #2a2a2e; border: none; color: white; padding: 0.25rem 0.75rem; border-radius: 8px; cursor: pointer; font-size: 0.75rem; transition: 0.2s; }
+        .timer-btn:hover { background: var(--red-primary); }
+        
+        .search-section { max-width: 1400px; margin: 1.5rem auto 0; padding: 0 1rem; }
+        .search-box { width: 100%; max-width: 400px; background: #1e1e24; border: 1px solid #333; border-radius: 40px; padding: 0.8rem 1.2rem; color: white; font-size: 0.9rem; transition: 0.2s; }
+        .search-box:focus { outline: none; border-color: var(--red-primary); box-shadow: 0 0 8px var(--red-glow); }
+        .search-box::placeholder { color: #666; }
+        
+        .container { max-width: 1400px; margin: 0 auto; padding: 2rem 1rem; }
+        .ghost-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+        .ghost-card { background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border); cursor: pointer; transition: all 0.25s ease; overflow: hidden; }
+        .ghost-card:hover { border-color: var(--red-primary); transform: translateY(-5px); box-shadow: 0 12px 25px rgba(0,0,0,0.3); }
+        .ghost-header { padding: 1rem 1rem 0.5rem; display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; border-bottom: 1px dashed #2a2a2e; }
+        .ghost-name { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: #e8e8e8; }
+        
+        .danger-levels { display: flex; gap: 0.5rem; }
+        .level { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: bold; background: #1a1a2e; }
+        .level-1 { background: #2d6a4f; color: white; box-shadow: 0 0 6px #2d6a4f; }
+        .level-3 { background: #e76f51; color: white; box-shadow: 0 0 6px #e76f51; }
+        .level-5 { background: #c41e3a; color: white; box-shadow: 0 0 8px #c41e3a; }
+        
+        .ghost-preview { padding: 1rem; font-size: 0.85rem; color: #aaa; min-height: 70px; }
+        .ghost-tag { padding: 0.5rem 1rem; font-size: 0.7rem; color: #666; border-top: 1px solid #2a2a2e; background: #0e0e10; }
+        
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
+        .modal.active { display: flex; }
+        .modal-content { background: var(--bg-card); max-width: 800px; width: 90%; border-radius: 24px; border-top: 3px solid var(--red-primary); max-height: 85vh; overflow-y: auto; }
+        .modal-header { padding: 1.5rem; border-bottom: 1px solid #2a2a2e; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: var(--bg-card); }
+        .modal-header h2 { font-family: 'Playfair Display', serif; color: var(--red-primary); font-size: 1.8rem; }
+        .modal-close { background: none; border: none; color: white; font-size: 2rem; cursor: pointer; }
+        .modal-close:hover { color: var(--red-primary); }
+        .modal-body { padding: 1.5rem; }
+        .ability-section { background: #0e0e10; border-radius: 12px; padding: 1rem; margin-bottom: 1rem; border-left: 3px solid var(--red-primary); }
+        .ability-title { font-weight: bold; color: var(--red-primary); margin-bottom: 0.75rem; font-size: 1rem; }
+        .ability-text { color: #ccc; line-height: 1.5; font-size: 0.9rem; }
+        .ability-text strong { color: var(--red-primary); }
+        .evidence { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+        .evidence-badge { background: #2a2a2e; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; color: #aaa; }
+        .no-data { text-align: center; color: #888; padding: 2rem; }
+        .results-count { margin-bottom: 1.5rem; font-size: 0.9rem; color: #aaa; }
+        
+        .footer { text-align: center; padding: 2rem; border-top: 1px solid #1e1e24; color: #777; font-size: 0.8rem; }
+        .footer a { color: var(--red-primary); text-decoration: none; }
+        .footer a:hover { text-decoration: underline; }
+        .credits { margin-top: 0.5rem; font-size: 0.7rem; color: #555; }
+        
+        @media (max-width: 680px) { 
+            .hero-content { flex-direction: column; text-align: center; } 
+            .logo-area { justify-content: center; } 
+            .site-logo { max-width: 90%; margin: 0 auto; }
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <div class="hero-content">
+            <div class="logo-area">
+                <div class="baphomet-seal"><svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="45" stroke="#c41e3a" stroke-width="2" fill="none"/><circle cx="50" cy="50" r="42" stroke="#c41e3a" stroke-width="0.5" stroke-dasharray="3 3" fill="none"/><polygon points="50,10 61,38 92,38 67,55 78,84 50,67 22,84 33,55 8,38 39,38" stroke="#c41e3a" stroke-width="1.5" fill="none" stroke-linejoin="round"/><text x="50" y="52" text-anchor="middle" fill="#c41e3a" font-size="8" font-family="serif" dominant-baseline="middle">S</text><text x="50" y="96" text-anchor="middle" fill="#c41e3a" font-size="6" font-family="serif">⚶</text></svg></div>
+                <div class="title-group">
+                    <img src="https://i.postimg.cc/CxjPYsDD/output.webp" alt="Ghost Exile Logo" class="site-logo">
+                    <p id="siteSubtitle">GHOST GUIDE • KNOWLEDGE BASE</p>
+                </div>
+            </div>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <div class="lang-switch">
+                    <button class="lang-btn active" data-lang="ru">RU</button>
+                    <button class="lang-btn" data-lang="en">EN</button>
+                </div>
+                <div class="timer-card">
+                    <div class="timer-display" id="timerDisplay">00:00:00</div>
+                    <div class="timer-buttons">
+                        <button class="timer-btn" id="timerStart">Start</button>
+                        <button class="timer-btn" id="timerPause">Pause</button>
+                        <button class="timer-btn" id="timerReset">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="search-section">
+            <input type="text" class="search-box" id="searchInput" placeholder="Search ghost...">
+        </div>
+    </div>
+    <div class="container">
+        <div class="results-count" id="resultsCount">Ghosts in database: <span id="totalCount">0</span></div>
+        <div class="ghost-grid" id="ghostGrid"></div>
+    </div>
+    <div class="footer">
+        <div id="footerText">Information based on in-game data | Danger levels: 1 — low, 5 — maximum</div>
+        <div class="credits">
+            📊 Guide created based on information from tester <strong>Rizonchik</strong>. All data on percentages and cooldowns taken from <a href="https://wiki.ghost-exile.site" target="_blank">wiki.ghost-exile.site</a><br>
+            🎥 Players can visually see some ghosts in the video by <strong>DmiOriginal</strong>: <a href="https://youtu.be/S_ifISHYkXM?si=SI2e1Rz7yGCJPRNU" target="_blank">watch on YouTube</a>
+        </div>
+    </div>
+    <div id="modal" class="modal"><div class="modal-content"><div class="modal-header"><h2 id="modalTitle"></h2><button class="modal-close" id="closeModal">&times;</button></div><div class="modal-body" id="modalBody"></div></div></div>
+
+    <script>
+        // ============================================================
+        // TRANSLATIONS
+        // ============================================================
+        const translations = {
+            ru: {
+                siteSubtitle: "ГАЙД ПО ПРИЗРАКАМ • БАЗА ЗНАНИЙ",
+                searchPlaceholder: "Поиск призрака...",
+                resultsPrefix: "Призраков в базе:",
+                footer: "Информация основана на внутриигровых данных | Уровни опасности: 1 — низкий, 5 — максимальный",
+                noData: "Нет данных. Способности будут добавлены.",
+                clickToStudy: "Нажмите, чтобы изучить",
+                noGhosts: "Призраков не найдено",
+                infoLater: "Информация о способностях",
+                willBeAdded: "будет добавлена позже.",
+                timerStart: "Старт",
+                timerPause: "Пауза",
+                timerReset: "Сброс"
+            },
+            en: {
+                siteSubtitle: "GHOST GUIDE • KNOWLEDGE BASE",
+                searchPlaceholder: "Search ghost...",
+                resultsPrefix: "Ghosts in database:",
+                footer: "Information based on in-game data | Danger levels: 1 — low, 5 — maximum",
+                noData: "No data. Abilities will be added.",
+                clickToStudy: "Click to study",
+                noGhosts: "No ghosts found",
+                infoLater: "Information about",
+                willBeAdded: "will be added later.",
+                timerStart: "Start",
+                timerPause: "Pause",
+                timerReset: "Reset"
+            }
+        };
+
+        let currentLang = 'ru';
+
+        // ============================================================
+        // GHOST DATABASE
+        // ============================================================
+        
+        const ghostData = {
+            "Аманодзяку": { ru_name: "Аманодзяку", en_name: "Amanojyaku", evidence_ru: ["Лазерная проекция", "Отрицательная температура", "Дымка"], evidence_en: ["Laser Projection", "Freezing Temperatures", "Mist"],
+              abilities_ru: `<div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Пожирание рассудка, частые атаки.<br><strong>Механика:</strong> Каждые 7 секунд отнимает рассудок у всех рядом (радиус 4м в мультиплеере, 6м в соло).<br><strong>Скорость потери:</strong> Соло: 0.008-0.017 ед. Мульти: 0.003-0.011 ед.<br><strong>Агрессивность:</strong> Базовая активность 45%.</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Рассудок отображается некорректно.<br><strong>Искажение (16%):</strong> Каждые 60 секунд накладывает галлюцинацию на монитор рассудка.<br><strong>Длительность:</strong> 3-6 минут.</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Может занижать рассудок до нуля.<br><strong>Обнуление (35%):</strong> Каждые 90 секунд временно "крадёт" рассудок всех живых игроков (падение до 0% — фейк).<br><strong>Длительность:</strong> 15-45 секунд.</div></div>`,
+              abilities_en: `<div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> Sanity devouring, frequent attacks.<br><strong>Mechanic:</strong> Every 7 seconds drains sanity from nearby players (4m radius in multiplayer, 6m in solo).<br><strong>Loss rate:</strong> Solo: 0.008-0.017. Multi: 0.003-0.011.<br><strong>Aggression:</strong> Base activity 45%.</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text"><strong>Unique trait:</strong> Sanity display may be incorrect.<br><strong>Distortion (16%):</strong> Every 60 seconds applies hallucination to sanity monitor.<br><strong>Duration:</strong> 3-6 minutes.</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text"><strong>Unique trait:</strong> Can temporarily reduce sanity to zero.<br><strong>Nullification (35%):</strong> Every 90 seconds temporarily "steals" sanity from all living players (drop to 0% — fake).<br><strong>Duration:</strong> 15-45 seconds.</div></div>` },
+            
+            "Вий": { ru_name: "Вий", en_name: "Viy", evidence_ru: ["Записи в блокноте", "Отрицательная температура", "Лазерная проекция"], evidence_en: ["Ghost Writing", "Freezing Temperatures", "Laser Projection"],
+              abilities_ru: `<div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> При взаимодействии с солью вызывает её потемнение (30% шанс), следов не остаётся. Соль темнеет в течение 6 секунд.</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> На лазерной проекции не проявляет признаков движения — неподвижно стоит, после чего исчезает.</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> В начале охоты может прижать жертву к земле (30% шанс). Игрок садится на корточки и не может встать/бежать 7-13 секунд.</div></div>`,
+              abilities_en: `<div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> When interacting with salt, causes it to darken (30% chance), no footprints remain. Salt darkens over 6 seconds.</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text"><strong>Unique trait:</strong> On laser projection shows no signs of movement — stands still, then disappears.</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text"><strong>Unique trait:</strong> At hunt start can pin victim to the ground (30% chance). Player crouches and cannot stand/run for 7-13 seconds.</div></div>` },
+            
+            "Гриммуа": { ru_name: "Гриммуа", en_name: "Grimoire", evidence_ru: ["Записи в блокноте", "Отрицательная температура", "Инфракрасный датчик движения"], evidence_en: ["Ghost Writing", "Freezing Temperatures", "IR Motion Sensor"],
+              abilities_ru: `<div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> При прослушивании датчика звука в любимой комнате можно услышать раздирающий крик (30% шанс, кулдаун 44 сек).</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Вне любимой комнаты становится значительно быстрее (скорость x2.0). В любимой комнате замедлен (x0.75).</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Создаёт невидимые печати в любимой комнате (каждые 65 сек, шанс 21%). Уничтожаются УФ-фонариком за 5 секунд.</div></div>`,
+              abilities_en: `<div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> When listening to sound sensor in favorite room, you may hear a tearing scream (30% chance, 44 sec cooldown).</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text"><strong>Unique trait:</strong> Outside favorite room becomes significantly faster (speed x2.0). In favorite room slowed (x0.75).</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text"><strong>Unique trait:</strong> Creates invisible seals in favorite room (every 65 sec, 21% chance). Destroyed with UV flashlight in 5 seconds.</div></div>` },
+            
+            "Джинн": { ru_name: "Джинн", en_name: "Jinn", evidence_ru: ["Записи в блокноте", "Уровень ЭМП 5", "Отрицательная температура"], evidence_en: ["Ghost Writing", "EMF Level 5", "Freezing Temperatures"],
+              abilities_ru: `<div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Когда электричество включено — чрезвычайно активен (+10% к шансу атаки). Выключено — пассивнее (-10%). Пытается включить щиток каждые 30 сек (23% шанс).</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Массовый сбой электроники (45% шанс каждые 80 сек). Все приборы в радиусе 55м бесконтрольно включаются/выключаются.</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Электрический прыжок во время охоты (32% шанс). Скорость увеличивается в 8 раз на 1 секунду, кулдаун 3 сек.</div></div>`,
+              abilities_en: `<div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> When electricity is on — extremely active (+10% hunt chance). Off — more passive (-10%). Tries to turn on breaker every 30 sec (23% chance).</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text"><strong>Unique trait:</strong> Mass electronics failure (45% chance every 80 sec). All devices within 55m uncontrollably turn on/off.</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text"><strong>Unique trait:</strong> Electric jump during hunt (32% chance). Speed increases 8x for 1 second, 3 sec cooldown.</div></div>` },
+            
+            "Диббук": { ru_name: "Диббук", en_name: "Dybbuk", evidence_ru: ["Голос в диктофоне", "Инфракрасный датчик движения", "Дымка"], evidence_en: ["Spirit Box", "IR Motion Sensor", "Mist"],
+              abilities_ru: `<div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Охотится чаще, если средний рассудок ниже 50%. При падении до 50% игнорирует таймеры (+25% к шансу охоты).</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Бесшумная охота (60% шанс). Первые 15-120 секунд не издает звуков шагов.</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Ложная охота (55% шанс каждые 120 сек). Если все игроки спрячутся в шкафы — распахнёт их и закроет выходы.</div></div>`,
+              abilities_en: `<div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> Hunts more often if average sanity below 50%. When dropping to 50%, ignores timers (+25% hunt chance).</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text"><strong>Unique trait:</strong> Silent hunt (60% chance). First 15-120 seconds makes no footstep sounds.</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text"><strong>Unique trait:</strong> Fake hunt (55% chance every 120 sec). If all players hide in lockers — opens them and locks exits.</div></div>` },
+            
+            "Допплер": { ru_name: "Допплер", en_name: "Doppler", evidence_ru: ["Дымка", "Инфракрасный датчик движения", "Лазерная проекция (РЕК 3)"], evidence_en: ["Mist", "IR Motion Sensor", "REC 3"],
+              abilities_ru: `<div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Активность возрастает с каждой потерянной единицей рассудка. Может создать вторую дымку в соседней комнате (25% шанс).</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Создаёт комнату-ловушку с клоном. Если войти — клон рычит и все двери запираются.</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Атака с поддержкой двойника (51% шанс). Создаёт клона в другой части дома, который может убить.</div></div>`,
+              abilities_en: `<div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> Activity increases with each lost sanity point. Can create second mist in adjacent room (25% chance).</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text"><strong>Unique trait:</strong> Creates trap room with clone. If you enter — clone roars and all doors lock.</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text"><strong>Unique trait:</strong> Attack with doppelganger support (51% chance). Creates clone in another part of house that can kill.</div></div>` },
+            
+            "Иллюзио": { ru_name: "Иллюзио", en_name: "Illusio", evidence_ru: ["Лазерная проекция", "Следы эктоплазмы", "Огонёк на камере"], evidence_en: ["Laser Projection", "Ectoplasm", "Camera Light"],
+              abilities_ru: `<div class="ability-section"><div class="ability-title">Пассивная способность</div><div class="ability-text"><strong>Смена облика:</strong> Во время охоты при каждом мерцании модели 55% шанс сменить облик на любого другого призрака.</div></div><div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Не отображается на камере при наблюдении лазерной проекции.</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> При фотографировании во время охоты видна лишь как тень.</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Порождает несколько копий (70% шанс). Клоны преследуют игроков, замедляют при контакте на 4 секунды. Настоящий призрак медленнее.</div></div>`,
+              abilities_en: `<div class="ability-section"><div class="ability-title">Passive ability</div><div class="ability-text"><strong>Shape-shift:</strong> During hunt, 55% chance to change appearance to any other ghost model with each flicker.</div></div><div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> Does not appear on camera when observing laser projection.</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text"><strong>Unique trait:</strong> When photographed during hunt, only visible as a shadow.</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text"><strong>Unique trait:</strong> Creates multiple copies (70% chance). Clones chase players, slow on contact for 4 seconds. Real ghost is slower.</div></div>` },
+            
+            "Кинег": { ru_name: "Кинег", en_name: "Kineg", evidence_ru: ["Радиоприемник", "Огонек на камере", "Дымка"], evidence_en: ["Radio", "Camera Light", "Mist"],
+              abilities_ru: `<div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Шепот слышит лишь один игрок (31% шанс каждые 110 сек), снижает рассудок на 0.1-0.15 ед.</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Громкий шепот с указанием местоположения (41% шанс каждые 60 сек).</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Накладывает проклятие шепотом (45% шанс каждые 120 сек). Чтобы избавиться — выйти из дома. Иначе рассудок упадет до 0.</div></div>`,
+              abilities_en: `<div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> Whisper heard by only one player (31% chance every 110 sec), reduces sanity by 0.1-0.15.</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text"><strong>Unique trait:</strong> Loud whisper with location indication (41% chance every 60 sec).</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text"><strong>Unique trait:</strong> Places a curse via whisper (45% chance every 120 sec). To remove — leave the house. Otherwise sanity drops to 0.</div></div>` },
+            
+            "Кидзё": { ru_name: "Кидзё", en_name: "Kidzё", evidence_ru: ["Радиоприемник", "Уровень ЭМП 5", "Дымка"], evidence_en: ["Radio", "EMF Level 5", "Mist"],
+              abilities_ru: `<div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Если сфотографировать — может мгновенно начать охоту (55% шанс). +20% к шансу охоты после фото.</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Взгляд на призрака вызывает ухудшение чувств (90% шанс). Эффект оглушения 8-23 секунды.</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Фотография может прервать охоту (63% шанс). Если сфотографировать во время активной погони — атака прекращается.</div></div>`,
+              abilities_en: `<div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> If photographed — may instantly start hunt (55% chance). +20% hunt chance after photo.</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text"><strong>Unique trait:</strong> Looking at ghost causes sensory degradation (90% chance). Stun effect 8-23 seconds.</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text"><strong>Unique trait:</strong> Photograph may interrupt hunt (63% chance). If photographed during active chase — attack stops.</div></div>` },
+            
+            "Мара": { ru_name: "Мара", en_name: "Mara", evidence_ru: ["Голос в диктофоне", "Инфракрасный датчик движения", "Следы эктоплазмы"], evidence_en: ["Spirit Box", "IR Motion Sensor", "Ectoplasm"],
+              abilities_ru: `<div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Часто выключает электрощиток (38% шанс через 30 сек). На свету атакует реже (-10% к шансу), в темноте чаще (+10%).</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Может вывести фонарик из строя (15% шанс) на 15-35 секунд. Кулдаун 48 сек.</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Накладывает непроглядный туман во время охоты. Может выключать прожектор.</div></div>`,
+              abilities_en: `<div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> Often turns off breaker (38% chance after 30 sec). Attacks less in light (-10% chance), more in dark (+10%).</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text"><strong>Unique trait:</strong> Can disable flashlight (15% chance) for 15-35 seconds. 48 sec cooldown.</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text"><strong>Unique trait:</strong> Creates impenetrable fog during hunt. Can turn off spotlight.</div></div>` },
+            
+            "Могвай": { ru_name: "Могвай", en_name: "Mogwai", evidence_ru: ["Голос в диктофоне", "Лазерная проекция", "Отрицательная температура"], evidence_en: ["Spirit Box", "Laser Projection", "Freezing Temperatures"],
+              abilities_ru: `<div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> В холоде атакует чаще, в тепле реже. Может показать аномальную температуру -50°C (15% шанс).</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Ледяное дыхание (21% шанс) — понижает температуру, замедляет игрока на 7-11 секунд.</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Сбой термометров (11% шанс). Все термометры показывают случайные значения 42-112 секунд.</div></div>`,
+              abilities_en: `<div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> Attacks more in cold, less in heat. Can show anomalous temperature -50°C (15% chance).</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text"><strong>Unique trait:</strong> Icy breath (21% chance) — lowers temperature, slows player for 7-11 seconds.</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text"><strong>Unique trait:</strong> Thermometer malfunction (11% chance). All thermometers show random values for 42-112 seconds.</div></div>` },
+            
+            "Мононоке": { ru_name: "Мононоке", en_name: "Mononoke", evidence_ru: ["Голос в диктофоне", "Уровень ЭМП 5", "Радиоприемник"], evidence_en: ["Spirit Box", "EMF Level 5", "Radio"],
+              abilities_ru: `<div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Агрессивное хлопанье дверьми (35% шанс каждые 95 сек).</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Сбивает приборы со стен и поверхностей (32% шанс каждые 45 сек).</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Может выбить игрока из шкафа (40% шанс). Полностью открывает двери во время охоты.</div></div>`,
+              abilities_en: `<div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> Aggressive door slamming (35% chance every 95 sec).</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text"><strong>Unique trait:</strong> Knocks equipment off walls and surfaces (32% chance every 45 sec).</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text"><strong>Unique trait:</strong> Can knock player out of locker (40% chance). Fully opens doors during hunt.</div></div>` },
+            
+            "Мюлинг": { ru_name: "Мюлинг", en_name: "Myling", evidence_ru: ["Голос в диктофоне", "Уровень ЭМП 5", "Отрицательная температура"], evidence_en: ["Spirit Box", "EMF Level 5", "Freezing Temperatures"],
+              abilities_ru: `<div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Частый шепот за спиной (10% шанс каждые 15 сек) — игрок роняет предмет. Высокая активность с дверьми (70%).</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Резкий гул в начале охоты (64% шанс) — выпадает предмет из рук.</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Оглушение во время охоты (65% шанс каждые 9 сек) — звук снижается до 15% на 10 секунд.</div></div>`,
+              abilities_en: `<div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> Frequent whisper behind back (10% chance every 15 sec) — player drops item. High door activity (70%).</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text"><strong>Unique trait:</strong> Sharp hum at hunt start (64% chance) — drops item from hands.</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text"><strong>Unique trait:</strong> Stun during hunt (65% chance every 9 sec) — sound reduces to 15% for 10 seconds.</div></div>` },
+            
+            "Они": { ru_name: "Они", en_name: "Oni", evidence_ru: ["Радиоприемник", "Инфракрасный датчик движения", "РЕК 3"], evidence_en: ["Radio", "IR Motion Sensor", "REC 3"],
+              abilities_ru: `<div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Топот при ответе в радиоприемник (15% шанс). Постоянный бонус +5% к шансу охоты.</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Топает за спиной охотника (11% шанс), затем начинает охоту.</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Ломает освещение в любимой комнате после охоты (45% шанс). Свет нельзя включить 43 секунды.</div></div>`,
+              abilities_en: `<div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> Stomping when answering radio (15% chance). Permanent +5% hunt chance bonus.</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text"><strong>Unique trait:</strong> Stomps behind hunter (11% chance), then starts hunt.</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text"><strong>Unique trait:</strong> Breaks lighting in favorite room after hunt (45% chance). Light cannot be turned on for 43 seconds.</div></div>` },
+            
+            "Обакэ": { ru_name: "Обакэ", en_name: "Obake", evidence_ru: ["Записи в блокноте", "Инфракрасный датчик движения", "Следы эктоплазмы"], evidence_en: ["Ghost Writing", "IR Motion Sensor", "Ectoplasm"],
+              abilities_ru: `<div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Может оставить записи в блокноте со следами эктоплазмы. Отпечатки видны бесконечно.</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Уничтожает печати Астарота с первого раза (55% шанс каждые 40 сек). Частота охоты снижается.</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Может изменить печать Астарота на печать Бафомета (75% шанс каждые 30 сек). Способен далеко отходить от любимой комнаты.</div></div>`,
+              abilities_en: `<div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> Can leave ghost writing with ectoplasm fingerprints. Prints visible indefinitely.</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text"><strong>Unique trait:</strong> Destroys Astaroth seals in one hit (55% chance every 40 sec). Hunt frequency decreases.</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text"><strong>Unique trait:</strong> Can change Astaroth seal to Baphomet seal (75% chance every 30 sec). Can wander far from favorite room.</div></div>` },
+            
+            "Онрё": { ru_name: "Онрё", en_name: "Onryo", evidence_ru: ["Записи в блокноте", "Уровень ЭМП 5", "Лазерная проекция"], evidence_en: ["Ghost Writing", "EMF Level 5", "Laser Projection"],
+              abilities_ru: `<div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Крик при взятии паспорта (34% шанс). Регулярные крики (7% шанс каждые 35 сек).</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Пятна крови на полу (35% шанс каждые 25 сек). 2-8 пятен, исчезают через 34 сек.</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Голосовые помехи (14% шанс каждые 35 сек) — глобальные помехи в связи на 60 секунд.</div></div>`,
+              abilities_en: `<div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> Scream when taking passport (34% chance). Regular screams (7% chance every 35 sec).</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text"><strong>Unique trait:</strong> Blood stains on floor (35% chance every 25 sec). 2-8 stains, disappear after 34 sec.</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text"><strong>Unique trait:</strong> Voice interference (14% chance every 35 sec) — global communication interference for 60 seconds.</div></div>` },
+            
+            "Пейлвойс": { ru_name: "Пейлвойс", en_name: "Pale Voice", evidence_ru: ["Голос в диктофоне", "Отрицательная температура", "РЕК 3"], evidence_en: ["Spirit Box", "Freezing Temperatures", "REC 3"],
+              abilities_ru: `<div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> При приближении активирует запись — в диктофоне раздаётся оглушительный крик.</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Если в любимой комнате произнести имя — может появиться (20% шанс) или начать охоту (5% шанс).</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Инверсия управления во время охоты (38% шанс) — кнопки движения меняются местами до конца атаки.</div></div>`,
+              abilities_en: `<div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> When approaching, activates recording — deafening scream on spirit box.</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text"><strong>Unique trait:</strong> If name is spoken in favorite room — may appear (20% chance) or start hunt (5% chance).</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text"><strong>Unique trait:</strong> Control inversion during hunt (38% chance) — movement buttons swap until attack ends.</div></div>` },
+            
+            "Пиру": { ru_name: "Пиру", en_name: "Piru", evidence_ru: ["Отрицательная температура", "Следы эктоплазмы", "Огонек на камере"], evidence_en: ["Freezing Temperatures", "Ectoplasm", "Camera Light"],
+              abilities_ru: `<div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Привязан к любимой комнате. Может бросать предметы в охотника (18% шанс каждые 13 сек). Чаще захлопывает дверь (27% шанс).</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Во время охоты запирает дверь в любимой комнате. Может начать охоту при долгом нахождении в ней (4% шанс каждые 23 сек).</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Если спрятаться в шкафу в любимой комнате — охота не закончится, пока не выйдете.</div></div>`,
+              abilities_en: `<div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> Tied to favorite room. Can throw items at hunter (18% chance every 13 sec). Slams door more often (27% chance).</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text"><strong>Unique trait:</strong> During hunt, locks door in favorite room. May start hunt if staying long (4% chance every 23 sec).</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text"><strong>Unique trait:</strong> If you hide in locker in favorite room — hunt won't end until you exit.</div></div>` },
+            
+            "Пишачи": { ru_name: "Пишачи", en_name: "Pishachi", evidence_ru: ["РЕК 3", "Отрицательная температура", "Огонек на камере"], evidence_en: ["REC 3", "Freezing Temperatures", "Camera Light"],
+              abilities_ru: `<div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Может дать любое другое доказательство. Имитирует улики других призраков.</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Ложные порталы (13% шанс каждые 60 сек). Слышен звук портала, который исчезает при приближении.</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Ложная охота (37% шанс каждые 60 сек). Если клон догонит — рассудок падает до 0%.</div></div>`,
+              abilities_en: `<div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> Can give any other evidence. Mimics evidence of other ghosts.</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text"><strong>Unique trait:</strong> Fake portals (13% chance every 60 sec). Portal sound heard, disappears when approached.</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text"><strong>Unique trait:</strong> Fake hunt (37% chance every 60 sec). If clone catches you — sanity drops to 0%.</div></div>` },
+            
+            "Полтергейст": { ru_name: "Полтергейст", en_name: "Poltergeist", evidence_ru: ["Записи в блокноте", "Отрицательная температура", "Дымка"], evidence_en: ["Ghost Writing", "Freezing Temperatures", "Mist"],
+              abilities_ru: `<div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Взрыв предметов (50% шанс каждые 40 сек) — все предметы в радиусе 10м разлетаются.</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Хаос во время охоты (9% шанс каждые 8 сек) — погром в 3 случайных комнатах.</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Метание предметов в игрока (12% шанс каждые 7 сек) во время погони.</div></div>`,
+              abilities_en: `<div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> Item explosion (50% chance every 40 sec) — all items within 10m scatter.</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text"><strong>Unique trait:</strong> Chaos during hunt (9% chance every 8 sec) — havoc in 3 random rooms.</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text"><strong>Unique trait:</strong> Throwing items at player (12% chance every 7 sec) during chase.</div></div>` },
+            
+            "Ревенант": { ru_name: "Ревенант", en_name: "Revenant", evidence_ru: ["Голос в диктофоне", "Следы эктоплазмы", "Огонек на камере"], evidence_en: ["Spirit Box", "Ectoplasm", "Camera Light"],
+              abilities_ru: `<div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Если рядом распятие — частота охоты увеличена (+30 к порогу, +40% к шансу). Базовая скорость 1.55x.</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Если срабатывает распятие — через 5 сек запускает повторную охоту с ускорением (+9.3%).</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Если нет целых распятий — скорость становится в 2 раза выше до конца охоты.</div></div>`,
+              abilities_en: `<div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> If crucifix nearby — increased hunt frequency (+30 threshold, +40% chance). Base speed 1.55x.</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text"><strong>Unique trait:</strong> If crucifix triggers — after 5 sec starts repeat hunt with acceleration (+9.3%).</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text"><strong>Unique trait:</strong> If no intact crucifixes — speed becomes 2x higher until hunt ends.</div></div>` },
+            
+            "Ронове": { ru_name: "Ронове", en_name: "Ronove", evidence_ru: ["Радиоприемник", "Голос в диктофоне", "Следы эктоплазмы"], evidence_en: ["Radio", "Spirit Box", "Ectoplasm"],
+              abilities_ru: `<div class="ability-section"><div class="ability-title">Пассивная способность</div><div class="ability-text"><strong>Подавление техники (15% шанс):</strong> В момент появления или начала охоты выключает все электронные приборы в доме.</div></div><div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Может создать 2 призрачных огонька в соседних комнатах (5-25% шанс) на 20-110 сек.</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Может менять записи об уликах в дневнике (9% шанс каждые 35 сек).</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Особая охота с призывом душ (19% шанс). Нужно прогонять души голосовыми командами.</div></div>`,
+              abilities_en: `<div class="ability-section"><div class="ability-title">Passive ability</div><div class="ability-text"><strong>Tech suppression (15% chance):</strong> At manifestation or hunt start, turns off all electronic devices in house.</div></div><div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> Can create 2 ghost lights in adjacent rooms (5-25% chance) for 20-110 sec.</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text"><strong>Unique trait:</strong> Can change evidence records in journal (9% chance every 35 sec).</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text"><strong>Unique trait:</strong> Special hunt with soul summoning (19% chance). Need to banish souls with voice commands.</div></div>` },
+            
+            "Рэйки": { ru_name: "Рэйки", en_name: "Reiki", evidence_ru: ["Записи в блокноте", "Лазерная проекция", "Следы эктоплазмы"], evidence_en: ["Ghost Writing", "Laser Projection", "Ectoplasm"],
+              abilities_ru: `<div class="ability-section"><div class="ability-title">Пассивная способность</div><div class="ability-text"><strong>Саботаж ритуала:</strong> Часто задувает свечи, необходимые для изгнания.</div></div><div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Если наступит в соль — следы видны УФ-фонариком 8 секунд.</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Чем больше инструментов в доме — тем быстрее во время охоты (+7.1% за каждый, макс 1.9x).</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Может прятать инструменты (43% шанс каждые 60 сек) — телепортирует в случайную комнату.</div></div>`,
+              abilities_en: `<div class="ability-section"><div class="ability-title">Passive ability</div><div class="ability-text"><strong>Ritual sabotage:</strong> Often blows out candles needed for exorcism.</div></div><div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> If steps in salt — footprints visible with UV for 8 seconds.</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text"><strong>Unique trait:</strong> More tools in house — faster during hunt (+7.1% each, max 1.9x).</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text"><strong>Unique trait:</strong> Can hide tools (43% chance every 60 sec) — teleports to random room.</div></div>` },
+            
+            "Хироку": { ru_name: "Хироку", en_name: "Hiroku", evidence_ru: ["Голос в диктофоне", "РЕК 3", "Дымка"], evidence_en: ["Spirit Box", "REC 3", "Mist"],
+              abilities_ru: `<div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Вблизи любимой комнаты слышен зловещий скрежет (царапанье по стенам). Кулдаун 60 сек.</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Записи на диктофоне искажаются — голос звучит перевёрнутым (эффект реверса).</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Заковывает игрока в призрачные цепи (50% шанс). Нужно сбрасывать цепи через QTE. После охоты исчезают.</div></div>`,
+              abilities_en: `<div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> Near favorite room, eerie scraping sound heard (scratching on walls). 60 sec cooldown.</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text"><strong>Unique trait:</strong> Spirit box recordings distorted — voice sounds reversed (reverse effect).</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text"><strong>Unique trait:</strong> Shackles player in ghostly chains (50% chance). Need to break chains via QTE. Disappear after hunt.</div></div>` },
+            
+            "Шинигами": { ru_name: "Шинигами", en_name: "Shinigami", evidence_ru: ["РЕК 3", "Радиоприемник", "Огонек на камере"], evidence_en: ["REC 3", "Radio", "Camera Light"],
+              abilities_ru: `<div class="ability-section"><div class="ability-title">Пассивная способность</div><div class="ability-text"><strong>Миграция к смерти:</strong> Каждые 15-18 сек меняет любимую комнату на ту, где лежит труп.</div></div><div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Во время охоты может распахнуть все шкафы (10% шанс каждые 12 сек).</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Во время охоты невозможно спрятаться в шкафу.</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Может показать охотнику его труп (33% шанс каждые 90 сек) — скример, снижающий рассудок.</div></div>`,
+              abilities_en: `<div class="ability-section"><div class="ability-title">Passive ability</div><div class="ability-text"><strong>Death migration:</strong> Every 15-18 sec changes favorite room to where corpse lies.</div></div><div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> During hunt, may throw open all lockers (10% chance every 12 sec).</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text"><strong>Unique trait:</strong> During hunt, impossible to hide in locker.</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text"><strong>Unique trait:</strong> May show hunter his own corpse (33% chance every 90 sec) — jumpscare reducing sanity.</div></div>` },
+            
+            "Шире": { ru_name: "Шире", en_name: "Shire", evidence_ru: ["Лазерная проекция", "Голос в диктофоне", "Следы эктоплазмы"], evidence_en: ["Laser Projection", "Spirit Box", "Ectoplasm"],
+              abilities_ru: `<div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Может начать атаку, если рядом только один охотник (в радиусе 5м). Если больше одного — не может начать охоту.</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Если все охотники рядом с Ширё более 8 секунд — выключает свет и появляется перед каждым. Кулдаун 200 сек.</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Изоляция жертвы (40% шанс) — остальных телепортирует на улицу. Ложное окончание охоты (35% шанс каждые 20 сек).</div></div>`,
+              abilities_en: `<div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> May start attack if only one hunter nearby (within 5m). If more than one — cannot start hunt.</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text"><strong>Unique trait:</strong> If all hunters near Shire for more than 8 seconds — turns off lights and appears before each. 200 sec cooldown.</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text"><strong>Unique trait:</strong> Victim isolation (40% chance) — teleports others outside. False hunt end (35% chance every 20 sec).</div></div>` }
+        };
+
+        const ghosts = Object.keys(ghostData).map(key => ({
+            name_ru: ghostData[key].ru_name,
+            name_en: ghostData[key].en_name,
+            evidence_ru: ghostData[key].evidence_ru,
+            evidence_en: ghostData[key].evidence_en,
+            abilities_ru: ghostData[key].abilities_ru,
+            abilities_en: ghostData[key].abilities_en
+        }));
+
+        // Timer
+        let timerInterval = null, timerSeconds = 0;
+        const timerDisplay = document.getElementById("timerDisplay");
+        function updateTimerDisplay() { const h = Math.floor(timerSeconds/3600), m = Math.floor((timerSeconds%3600)/60), s = timerSeconds%60; timerDisplay.textContent = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
+        document.getElementById("timerStart").onclick = () => { if (timerInterval) clearInterval(timerInterval); timerInterval = setInterval(() => { timerSeconds++; updateTimerDisplay(); }, 1000); };
+        document.getElementById("timerPause").onclick = () => { if (timerInterval) { clearInterval(timerInterval); timerInterval = null; } };
+        document.getElementById("timerReset").onclick = () => { if (timerInterval) { clearInterval(timerInterval); timerInterval = null; } timerSeconds = 0; updateTimerDisplay(); };
+
+        function getDangerLevels() {
+            return `
+                <div class="level level-1">1</div>
+                <div class="level level-3">3</div>
+                <div class="level level-5">5</div>
+            `;
+        }
+
+        function renderGhosts() {
+            const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+            const filtered = ghosts.filter(g => {
+                const nameToSearch = currentLang === 'ru' ? g.name_ru.toLowerCase() : g.name_en.toLowerCase();
+                return nameToSearch.includes(searchTerm);
+            });
+            document.getElementById("totalCount").innerText = filtered.length;
+            const grid = document.getElementById("ghostGrid");
+            if (!filtered.length) { grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:3rem; color:#666;">${translations[currentLang].noGhosts}</div>`; return; }
+            grid.innerHTML = filtered.map(ghost => {
+                const displayName = currentLang === 'ru' ? ghost.name_ru : ghost.name_en;
+                const abilitiesText = currentLang === 'ru' ? ghost.abilities_ru : ghost.abilities_en;
+                let previewText = translations[currentLang].noData;
+                if (abilitiesText && abilitiesText.length > 0) {
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = abilitiesText;
+                    previewText = (tempDiv.textContent || tempDiv.innerText || "").substring(0, 90);
+                    if (previewText.length === 90) previewText += "…";
+                }
+                return `<div class="ghost-card" onclick="showGhost('${ghost.name_ru}')"><div class="ghost-header"><span class="ghost-name">${displayName}</span><div class="danger-levels">${getDangerLevels()}</div></div><div class="ghost-preview">${previewText}</div><div class="ghost-tag">${translations[currentLang].clickToStudy}</div></div>`;
+            }).join("");
+        }
+
+        function getEvidenceHtml(evidence) {
+            if (!evidence || evidence.length === 0) return '';
+            return `<div class="evidence">${evidence.map(e => `<span class="evidence-badge">${e}</span>`).join('')}</div>`;
+        }
+
+        window.showGhost = function(ruName) {
+            const ghost = ghosts.find(g => g.name_ru === ruName);
+            if (!ghost) return;
+            const displayName = currentLang === 'ru' ? ghost.name_ru : ghost.name_en;
+            document.getElementById("modalTitle").innerHTML = displayName;
+            const evidence = currentLang === 'ru' ? ghost.evidence_ru : ghost.evidence_en;
+            const abilities = currentLang === 'ru' ? ghost.abilities_ru : ghost.abilities_en;
+            let content = '';
+            if (abilities && abilities.length > 0) {
+                content = getEvidenceHtml(evidence) + abilities;
+            } else {
+                content = `<div class="no-data">${translations[currentLang].infoLater} ${displayName} ${translations[currentLang].willBeAdded}</div>`;
+            }
+            document.getElementById("modalBody").innerHTML = content;
+            document.getElementById("modal").classList.add("active");
+        };
+
+        function updateUILanguage() {
+            document.getElementById("siteSubtitle").innerText = translations[currentLang].siteSubtitle;
+            document.getElementById("searchInput").placeholder = translations[currentLang].searchPlaceholder;
+            document.getElementById("resultsCount").innerHTML = `${translations[currentLang].resultsPrefix} <span id="totalCount">0</span>`;
+            document.getElementById("footerText").innerText = translations[currentLang].footer;
+            document.getElementById("timerStart").innerText = translations[currentLang].timerStart;
+            document.getElementById("timerPause").innerText = translations[currentLang].timerPause;
+            document.getElementById("timerReset").innerText = translations[currentLang].timerReset;
+            renderGhosts();
+        }
+
+        // Language switch
+        document.querySelectorAll(".lang-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".lang-btn").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                currentLang = btn.getAttribute("data-lang");
+                updateUILanguage();
+            });
+        });
+
+        document.getElementById("closeModal").onclick = () => document.getElementById("modal").classList.remove("active");
+        window.onclick = (e) => { if (e.target === document.getElementById("modal")) document.getElementById("modal").classList.remove("active"); };
+        document.getElementById("searchInput").oninput = () => renderGhosts();
+        
+        renderGhosts();
+    </script>
+</body>
+</html>
