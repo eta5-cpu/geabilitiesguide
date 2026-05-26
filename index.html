@@ -83,6 +83,8 @@
         .mechanics-table th { color: var(--red-primary); font-weight: 600; }
         .formula { background: #0a0a0c; padding: 1rem; border-radius: 12px; font-family: monospace; font-size: 1rem; color: var(--gold); text-align: center; margin: 1rem 0; border: 1px solid #333; }
         .example-box { background: #0e0e10; border-left: 3px solid var(--red-primary); padding: 1rem; margin: 1rem 0; border-radius: 8px; }
+        .ghost-list { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0; }
+        .ghost-tag-mech { background: #2a2a2e; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; color: var(--red-primary); }
         
         .footer { text-align: center; padding: 2rem; border-top: 1px solid #1e1e24; color: #777; font-size: 0.8rem; }
         .footer a { color: var(--red-primary); text-decoration: none; }
@@ -152,7 +154,7 @@
 
     <script>
         // ============================================================
-        // TRANSLATIONS
+        // TRANSLATIONS (с новыми разделами)
         // ============================================================
         const translations = {
             ru: {
@@ -168,7 +170,8 @@
                 timerStart: "Старт",
                 timerPause: "Пауза",
                 timerReset: "Сброс",
-                mechanicsTitle: "Игровые механики",
+                // Механика охоты
+                huntMechanics: "🏹 Механика охоты",
                 huntIntervals: "⏱️ Интервалы между охотами",
                 huntIntervalsDesc: "После окончания охоты запускается таймер. Когда таймер срабатывает — система проверяет, начнётся ли охота.",
                 difficulty: "Сложность",
@@ -188,7 +191,20 @@
                 examplePhotoNo: "<strong>Если НЕ сфотографирован:</strong><br>• СРА = -10 (атака возможна только при среднем рассудке ≤40)<br>• МША = -15",
                 exampleHow: "<strong>Как это работает:</strong> После фотографии Кидзё становится опаснее — он может атаковать при более высоком рассудке (60 вместо 40), а шанс атаки значительно возрастает. Плюс есть прямой шанс 55% начать охоту сразу после фото.",
                 specialTitle: "⚡ Дополнительные условия",
-                specialList: "<li>Сжигание проклятия у любимой вещи (игнорирует стандартный порог рассудка)</li><li>Особые способности призраков (например, реакция на распятие, паспорт и т.д.)</li><li>Случайный бонус +0, +5, +10 или +12 к формуле</li>"
+                specialList: "<li>Сжигание проклятия у любимой вещи (игнорирует стандартный порог рассудка)</li><li>Особые способности призраков (например, реакция на распятие, паспорт и т.д.)</li><li>Случайный бонус +0, +5, +10 или +12 к формуле</li>",
+                // Механика мансов
+                jukeMechanics: "🏃 Механика мансов (уклонение)",
+                jukeDesc: "В игре существует возможность успешно уклоняться от большинства призраков, используя различные техники передвижения.",
+                jukeBasic: "🚶‍♂️ Базовое уклонение",
+                jukeBasicText: "Большинство призраков обычной скорости можно успешно <strong>«мансить»</strong> — уклоняться от них, просто двигаясь пешком без остановки. Если призрак имеет стандартную скорость передвижения, он не сможет вас догнать при прямолинейном движении.",
+                jukeHost: "🎮 Особенности для хоста и не-хоста",
+                jukeHostText: "В отличие от Phasmophobia, в Ghost Exile техники уклонения одинаково эффективны как для хоста, так и для не-хоста. Проблем с пингом при правильном исполнении возникать не должно.",
+                jukeFast: "⚡ Исключения — быстрые призраки",
+                jukeFastText: "Следующих призраков <strong>не получится</strong> закручивать простым пешим ходом:",
+                jukeFastList: "<li><strong>Ускоренный Ронове</strong> — требует использования спринта</li><li><strong>Рэйки</strong> — требует использования спринта</li><li><strong>Джинн</strong> — требует использования спринта</li><li><strong>Ревенант</strong> — требует использования спринта</li>",
+                jukeFastNote: "При этом даже этих призраков можно успешно крутить вокруг себя с использованием спринта (клавиша Shift). Аналогичная логика работает и для ускоренных охот от <strong>шкатулок/плача</strong> — когда призрак выходит ускоренным из-за невыполнения механики.",
+                jukeGuardian: "👵 Особый случай — Хранительница (Бабка)",
+                jukeGuardianText: "Уклонение от <strong>Хранительницы в мире теней</strong> имеет важную особенность: рекомендуется доверять эту задачу <strong>исключительно хосту</strong>. Не-хост будет страдать от задержек (пинга), из-за чего Хранительница сможет убить его на расстоянии. Хост же справляется с этим очень легко благодаря отсутствию сетевой задержки."
             },
             en: {
                 siteSubtitle: "GHOST GUIDE • KNOWLEDGE BASE",
@@ -203,7 +219,8 @@
                 timerStart: "Start",
                 timerPause: "Pause",
                 timerReset: "Reset",
-                mechanicsTitle: "Game Mechanics",
+                // Hunt mechanics
+                huntMechanics: "🏹 Hunt Mechanics",
                 huntIntervals: "⏱️ Hunt Intervals",
                 huntIntervalsDesc: "After a hunt ends, a timer starts. When the timer triggers, the system checks if a new hunt will begin.",
                 difficulty: "Difficulty",
@@ -223,7 +240,20 @@
                 examplePhotoNo: "<strong>If NOT photographed:</strong><br>• SRA = -10 (attack only possible at average sanity ≤40)<br>• MSA = -15",
                 exampleHow: "<strong>How it works:</strong> After being photographed, Kidzё becomes more dangerous — it can attack at higher sanity (60 instead of 40), and the attack chance significantly increases. Plus there's a direct 55% chance to start a hunt immediately after the photo.",
                 specialTitle: "⚡ Special Conditions",
-                specialList: "<li>Burning a cursed possession (ignores standard sanity threshold)</li><li>Special ghost abilities (e.g., reaction to crucifix, passport, etc.)</li><li>Random bonus +0, +5, +10 or +12 to the formula</li>"
+                specialList: "<li>Burning a cursed possession (ignores standard sanity threshold)</li><li>Special ghost abilities (e.g., reaction to crucifix, passport, etc.)</li><li>Random bonus +0, +5, +10 or +12 to the formula</li>",
+                // Juke mechanics
+                jukeMechanics: "🏃 Juking Mechanics",
+                jukeDesc: "The game allows you to successfully dodge most ghosts using various movement techniques.",
+                jukeBasic: "🚶‍♂️ Basic Juking",
+                jukeBasicText: "Most normal-speed ghosts can be successfully <strong>«juked»</strong> — simply walk without stopping. If the ghost has standard movement speed, it won't be able to catch you in a straight line.",
+                jukeHost: "🎮 Host vs Non-Host",
+                jukeHostText: "Unlike Phasmophobia, in Ghost Exile juking techniques are equally effective for both host and non-host. Ping issues shouldn't arise with proper execution.",
+                jukeFast: "⚡ Exceptions — Fast Ghosts",
+                jukeFastText: "The following ghosts <strong>cannot</strong> be juked by simply walking:",
+                jukeFastList: "<li><strong>Ronove (accelerated)</strong> — requires sprinting</li><li><strong>Reiki</strong> — requires sprinting</li><li><strong>Jinn</strong> — requires sprinting</li><li><strong>Revenant</strong> — requires sprinting</li>",
+                jukeFastNote: "However, even these ghosts can be successfully circled using sprint (Shift key). The same logic applies to accelerated hunts from <strong>music boxes/crying</strong> — when the ghost becomes accelerated due to failed mechanics.",
+                jukeGuardian: "👵 Special Case — The Guardian (Granny)",
+                jukeGuardianText: "Juking the <strong>Guardian in the shadow realm</strong> has an important feature: it's recommended to leave this task <strong>exclusively to the host</strong>. Non-host players will suffer from latency (ping), which allows the Guardian to easily kill them from a distance. The host handles this very easily due to the absence of network delay."
             }
         };
 
@@ -231,7 +261,7 @@
         let currentTab = 'ghosts';
 
         // ============================================================
-        // ПОЛНАЯ БАЗА ДАННЫХ ПРИЗРАКОВ (ВСЕ 26 С АБИЛКАМИ)
+        // ПОЛНАЯ БАЗА ДАННЫХ ПРИЗРАКОВ (все 26 с абилками)
         // ============================================================
         
         const ghostData = {
@@ -269,7 +299,7 @@
             
             "Кидзё": { ru_name: "Кидзё", en_name: "Kidzё", evidence_ru: ["Радиоприемник", "Уровень ЭМП 5", "Дымка"], evidence_en: ["Radio", "EMF Level 5", "Mist"],
               abilities_ru: `<div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Если сфотографировать — может мгновенно начать охоту (55% шанс). +20% к шансу охоты после фото.</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Взгляд на призрака вызывает ухудшение чувств (90% шанс). Эффект оглушения 8-23 секунды.</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Фотография может прервать охоту (63% шанс). Если сфотографировать во время активной погони — атака прекращается.</div></div>`,
-              abilities_en: `<div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> If photographed — may instantly start hunt (55% chance). +20% hunt chance after photo.</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text"><strong>Unique trait:</strong> Looking at ghost causes sensory degradation (90% chance). Stun effect 8-23 seconds.</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text><strong>Unique trait:</strong> Photograph may interrupt hunt (63% chance). If photographed during active chase — attack stops.</div></div>` },
+              abilities_en: `<div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> If photographed — may instantly start hunt (55% chance). +20% hunt chance after photo.</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text"><strong>Unique trait:</strong> Looking at ghost causes sensory degradation (90% chance). Stun effect 8-23 seconds.</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text"><strong>Unique trait:</strong> Photograph may interrupt hunt (63% chance). If photographed during active chase — attack stops.</div></div>` },
             
             "Мара": { ru_name: "Мара", en_name: "Mara", evidence_ru: ["Голос в диктофоне", "Инфракрасный датчик движения", "Следы эктоплазмы"], evidence_en: ["Spirit Box", "IR Motion Sensor", "Ectoplasm"],
               abilities_ru: `<div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Часто выключает электрощиток (38% шанс через 30 сек). На свету атакует реже (-10% к шансу), в темноте чаще (+10%).</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Может вывести фонарик из строя (15% шанс) на 15-35 секунд. Кулдаун 48 сек.</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Накладывает непроглядный туман во время охоты. Может выключать прожектор.</div></div>`,
@@ -317,7 +347,7 @@
             
             "Ревенант": { ru_name: "Ревенант", en_name: "Revenant", evidence_ru: ["Голос в диктофоне", "Следы эктоплазмы", "Огонек на камере"], evidence_en: ["Spirit Box", "Ectoplasm", "Camera Light"],
               abilities_ru: `<div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Если рядом распятие — частота охоты увеличена (+30 к порогу, +40% к шансу). Базовая скорость 1.55x.</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Если срабатывает распятие — через 5 сек запускает повторную охоту с ускорением (+9.3%).</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Если нет целых распятий — скорость становится в 2 раза выше до конца охоты.</div></div>`,
-              abilities_en: `<div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> If crucifix nearby — increased hunt frequency (+30 threshold, +40% chance). Base speed 1.55x.</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text><strong>Unique trait:</strong> If crucifix triggers — after 5 sec starts repeat hunt with acceleration (+9.3%).</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text"><strong>Unique trait:</strong> If no intact crucifixes — speed becomes 2x higher until hunt ends.</div></div>` },
+              abilities_en: `<div class="ability-section"><div class="ability-title">First level</div><div class="ability-text"><strong>Unique trait:</strong> If crucifix nearby — increased hunt frequency (+30 threshold, +40% chance). Base speed 1.55x.</div></div><div class="ability-section"><div class="ability-title">Third level</div><div class="ability-text"><strong>Unique trait:</strong> If crucifix triggers — after 5 sec starts repeat hunt with acceleration (+9.3%).</div></div><div class="ability-section"><div class="ability-title">Fifth level</div><div class="ability-text"><strong>Unique trait:</strong> If no intact crucifixes — speed becomes 2x higher until hunt ends.</div></div>` },
             
             "Ронове": { ru_name: "Ронове", en_name: "Ronove", evidence_ru: ["Радиоприемник", "Голос в диктофоне", "Следы эктоплазмы"], evidence_en: ["Radio", "Spirit Box", "Ectoplasm"],
               abilities_ru: `<div class="ability-section"><div class="ability-title">Пассивная способность</div><div class="ability-text"><strong>Подавление техники (15% шанс):</strong> В момент появления или начала охоты выключает все электронные приборы в доме.</div></div><div class="ability-section"><div class="ability-title">Первый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Может создать 2 призрачных огонька в соседних комнатах (5-25% шанс) на 20-110 сек.</div></div><div class="ability-section"><div class="ability-title">Третий уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Может менять записи об уликах в дневнике (9% шанс каждые 35 сек).</div></div><div class="ability-section"><div class="ability-title">Пятый уровень</div><div class="ability-text"><strong>Уникальная черта:</strong> Особая охота с призывом душ (19% шанс). Нужно прогонять души голосовыми командами.</div></div>`,
@@ -409,8 +439,11 @@
         function renderMechanics() {
             const t = translations[currentLang];
             const mechanicsHtml = `
+                <!-- Раздел: Механика охоты -->
                 <div class="mechanics-card">
-                    <h3>${t.huntIntervals}</h3>
+                    <h3>${t.huntMechanics}</h3>
+                    
+                    <h4>${t.huntIntervals}</h4>
                     <p>${t.huntIntervalsDesc}</p>
                     <table class="mechanics-table">
                         <thead><tr><th>${t.difficulty}</th><th>${t.interval}</th></tr></thead>
@@ -421,9 +454,8 @@
                             <tr><td>🔴 ${t.psychopath}</td><td>18-23</td></tr>
                         </tbody>
                     </table>
-                </div>
-                <div class="mechanics-card">
-                    <h3>${t.calcTitle}</h3>
+                    
+                    <h4>${t.calcTitle}</h4>
                     <p>${t.calcDesc}</p>
                     <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
                         <li>${t.SRA_desc}</li>
@@ -431,18 +463,41 @@
                     </ul>
                     <div class="formula">${t.formula}</div>
                     <p>${t.formulaNote}</p>
-                </div>
-                <div class="mechanics-card">
-                    <h3>${t.exampleTitle}</h3>
+                    
+                    <h4>${t.exampleTitle}</h4>
                     <div class="example-box">
                         <p>${t.examplePhotoYes}</p>
                         <p style="margin-top: 0.5rem;">${t.examplePhotoNo}</p>
                     </div>
                     <p>${t.exampleHow}</p>
-                </div>
-                <div class="mechanics-card">
-                    <h3>${t.specialTitle}</h3>
+                    
+                    <h4>${t.specialTitle}</h4>
                     <ul style="margin-left: 1.5rem;">${t.specialList}</ul>
+                </div>
+                
+                <!-- Раздел: Механика мансов -->
+                <div class="mechanics-card">
+                    <h3>${t.jukeMechanics}</h3>
+                    <p>${t.jukeDesc}</p>
+                    
+                    <h4>${t.jukeBasic}</h4>
+                    <p>${t.jukeBasicText}</p>
+                    
+                    <h4>${t.jukeHost}</h4>
+                    <p>${t.jukeHostText}</p>
+                    
+                    <h4>${t.jukeFast}</h4>
+                    <p>${t.jukeFastText}</p>
+                    <div class="ghost-list">
+                        <span class="ghost-tag-mech">Ронове (ускоренный)</span>
+                        <span class="ghost-tag-mech">Рэйки</span>
+                        <span class="ghost-tag-mech">Джинн</span>
+                        <span class="ghost-tag-mech">Ревенант</span>
+                    </div>
+                    <p>${t.jukeFastNote}</p>
+                    
+                    <h4>${t.jukeGuardian}</h4>
+                    <p>${t.jukeGuardianText}</p>
                 </div>
             `;
             document.getElementById("mechanicsContent").innerHTML = mechanicsHtml;
